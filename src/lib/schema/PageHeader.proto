@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message PageHeader {
+  string schemaName = 1;
+  int32 pageBytes = 2;
+  repeated int32 rowByteOffsets = 3;
+}
