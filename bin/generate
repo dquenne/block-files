@@ -1,0 +1,2 @@
+#/bin/sh
+protoc -I src/lib/schema --ts_out src/lib/gen-ts src/lib/schema/*.proto
