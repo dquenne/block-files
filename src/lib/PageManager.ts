@@ -4,11 +4,23 @@ export class PageManager {
   constructor(
     readonly f: Deno.File,
     readonly pageBytes: number,
-    public lastPage: number
+    public length: number
   ) {}
 
+  /**
+   * AsyncGenerator that yields consecutive `Page`s
+   * @param start Which page to start iterating from. Default `0`
+   * @param end Which page to stop iterating at, exclusive. Default
+   * `this.length`
+   */
+  async *readPages(start = 0, end = this.length) {
+    for (let i = start; i < end; i++) {
+      yield (await this.getPage(i))!;
+    }
+  }
+
   async getPage(pageNumber: number) {
-    if (pageNumber > this.lastPage) {
+    if (pageNumber >= this.length) {
       return undefined;
     }
 
@@ -21,9 +33,9 @@ export class PageManager {
   }
 
   async newPage() {
-    this.lastPage++;
+    this.length++;
     const newPage = Page.create(this.pageBytes);
-    await this.writePage(this.lastPage, newPage);
+    await this.writePage(this.length - 1, newPage);
     return newPage;
   }
 
@@ -57,12 +69,12 @@ export class PageManager {
     return newIndex;
   }
 
-  static fromFile(file: Deno.File, pageBytes: number, lastPage: number) {
-    return new PageManager(file, pageBytes, lastPage);
+  static fromFile(file: Deno.File, pageBytes: number, length: number) {
+    return new PageManager(file, pageBytes, length);
   }
 
-  static async fromPath(path: string, pageBytes: number, lastPage: number) {
+  static async fromPath(path: string, pageBytes: number, length: number) {
     const file = await Deno.open(path, { read: true, write: true });
-    return new PageManager(file, pageBytes, lastPage);
+    return new PageManager(file, pageBytes, length);
   }
 }

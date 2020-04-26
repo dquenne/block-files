@@ -20,19 +20,10 @@ export class Page implements IPage {
     return this.readHeader();
   }
 
-  readRecords(start = 0, end = this.numRecords) {
-    let i = start;
-    const getRecordFunc = () => {
-      return this.getRecord(i)!;
-    };
-    return {
-      [Symbol.iterator]: function* () {
-        while (i < end) {
-          yield getRecordFunc();
-          i++;
-        }
-      },
-    };
+  *readRecords(start = 0, end = this.numRecords) {
+    for (let i = start; i < end; i++) {
+      yield this.getRecord(i)!;
+    }
   }
 
   recordFits(recordLength: number): boolean {
