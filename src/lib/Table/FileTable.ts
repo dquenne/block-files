@@ -57,9 +57,6 @@ export class FileTable<T> implements ITable<T> {
       await this.pageManager.writePage(finalPageIndex, finalPage);
       return new RowPointer(finalPageIndex, recordNumber);
     } else {
-      console.log(
-        `page ${finalPageIndex} is full, ${finalPage?.numRecords} stored`
-      );
       const newPageIndex = await this.pageManager.newPage();
       const newPage = (await this.pageManager.getPage(newPageIndex))!;
       const recordNumber = newPage.addRecord(buf.buffer);
