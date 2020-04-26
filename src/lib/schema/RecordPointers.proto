@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package ProtoBufGenerated; 
+
+message RecordPointer {
+  int32 offset = 1;
+  int32 byteLength = 2;
+}
+
+message RecordPointers {
+  int32 freeSpaceBeginPointer = 1;
+  int32 freeSpaceEndPointer = 2;
+  repeated RecordPointer rowByteOffsets = 3;
+}

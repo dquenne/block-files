@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package ProtoBufGenerated; 
+
 message PageHeader {
   string schemaName = 1;
   int32 pageBytes = 2;

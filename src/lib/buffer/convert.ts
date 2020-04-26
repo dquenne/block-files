@@ -1,4 +1,4 @@
-type IntArrayBuffer = { buffer: ArrayBuffer };
+type IntArrayBuffer = { buffer: ArrayBufferLike };
 
 export function toUint32(input: IntArrayBuffer) {
   return new Uint32Array(input.buffer);

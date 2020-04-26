@@ -1,9 +1,6 @@
-import { Page } from "./Page.ts";
+import { Page } from "./Page/index.ts";
 
 export class PageManager {
-  currentPage = 0;
-  // TODO: pageBytes and lastPage should be specified in the first page of the
-  // file, not manually set
   constructor(
     readonly f: Deno.File,
     readonly pageBytes: number,
@@ -14,8 +11,6 @@ export class PageManager {
     if (pageNumber > this.lastPage) {
       return undefined;
     }
-    console.log(pageNumber);
-    console.log(await this.seekToPage(pageNumber));
 
     const outBuffer = new Uint8Array(this.pageBytes);
     const numRead = await this.f.read(outBuffer);
@@ -27,7 +22,7 @@ export class PageManager {
 
   async newPage() {
     this.lastPage++;
-    const newPage = Page.create("foobar", this.pageBytes);
+    const newPage = Page.create(this.pageBytes);
     await this.writePage(this.lastPage, newPage);
     return newPage;
   }
