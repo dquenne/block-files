@@ -18,7 +18,5 @@ for (let i = 0; i < 3; i++) {
   console.log("last record:", page.getRecord(page.numRecords - 1));
 
   console.log("all records:");
-  page.readRecordPointerCollection().pointers.forEach((p, i) => {
-    console.log("  ", page.getRecord(i));
-  });
+  console.log([...page.readRecords()]);
 }

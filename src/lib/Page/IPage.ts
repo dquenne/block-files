@@ -8,6 +8,7 @@ export interface IPage {
 
   getRecord(recordIndex: number): ArrayBuffer | undefined;
   addRecord(input: ArrayBuffer): number;
+  readRecords(start?: number, end?: number): Iterable<ArrayBuffer>;
 
   // readHeader(): IPageHeader;
   // writeHeader(input: IPageHeader): void;
