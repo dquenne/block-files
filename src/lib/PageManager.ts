@@ -3,24 +3,23 @@ import { IBufferHandler } from "./BufferHandler/IBufferHandler.ts";
 import { FileBufferHandler } from "./BufferHandler/FileBufferHandler.ts";
 
 export class PageManager {
-  constructor(readonly bufferHandler: IBufferHandler, public length: number) {}
+  constructor(readonly bufferHandler: IBufferHandler) {}
 
   /**
    * AsyncGenerator that yields consecutive `Page`s. Finishes when it reaches
    * `end` or the buffer manager is out of pages.
    * @param start Which page to start iterating from. Default `0`
    * @param end Which page to stop iterating at, exclusive. Default
-   * `this.length`
+   * `Infinity`
    */
-  async *readPages(start = 0, end = this.length) {
-    const bufferIt = this.bufferHandler.readPages();
-    for (let i = start; i < end; i++) {
-      const buf = (await bufferIt.next()).value;
-      if (!buf) {
-        break;
-      }
-      yield Page.fromBuffer(buf);
+  async *readPages(start = 0, end = Infinity) {
+    for await (const pageBuffer of this.bufferHandler.readPages(start, end)) {
+      yield Page.fromBuffer(pageBuffer);
     }
+  }
+
+  async getLength() {
+    return await this.bufferHandler.getLength();
   }
 
   async getPage(pageNumber: number) {
@@ -28,11 +27,14 @@ export class PageManager {
     return buffer && Page.fromBuffer(buffer);
   }
 
+  /**
+   * @returns new page's pageNumber
+   */
   async newPage() {
     const numPages = await this.bufferHandler.getLength();
     const newPage = Page.create(this.bufferHandler.pageBytes);
     await this.writePage(numPages, newPage);
-    return newPage;
+    return numPages;
   }
 
   /**
@@ -45,7 +47,7 @@ export class PageManager {
   }
 
   static fromFile(file: Deno.File, pageBytes: number) {
-    return new PageManager(new FileBufferHandler(file, pageBytes), pageBytes);
+    return new PageManager(new FileBufferHandler(file, pageBytes));
   }
 
   static async fromPath(path: string, pageBytes: number) {

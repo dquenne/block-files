@@ -7,7 +7,7 @@ export interface IBufferHandler {
    * @param end Which page to stop iterating at, exclusive. Default
    * `Infinity`
    */
-  readPages(start?: number, end?: number): AsyncIterator<Uint8Array, void>;
+  readPages(start?: number, end?: number): AsyncGenerator<Uint8Array, void>;
 
   /**
    * Scans to end of buffer collection to determine how many page buffers are

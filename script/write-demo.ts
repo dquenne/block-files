@@ -7,7 +7,9 @@ const fr = await PageManager.fromPath(FILENAME, 4096);
 
 let page: Page;
 for (let i = 0; i < 3; i++) {
-  page = (await fr.getPage(i)) || (await fr.newPage());
+  page =
+    (await fr.getPage(i)) ||
+    (await fr.newPage().then(async (n) => (await fr.getPage(n))!));
 
   const whichWrite = page.numRecords / 4;
 
