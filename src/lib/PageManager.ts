@@ -25,6 +25,7 @@ export class PageManager {
     }
 
     const outBuffer = new Uint8Array(this.pageBytes);
+    await this.seekToPage(pageNumber);
     const numRead = await this.f.read(outBuffer);
     if (numRead === Deno.EOF) {
       return undefined;
