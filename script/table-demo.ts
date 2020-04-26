@@ -1,6 +1,7 @@
 import { FileTable } from "../src/lib/Table/FileTable.ts";
 import { FileBufferHandler } from "../src/lib/BufferHandler/FileBufferHandler.ts";
-import { IRowPointer, ITable } from "../src/lib/Table/ITable.ts";
+import { ITable } from "../src/lib/Table/ITable.ts";
+import { IRowPointer } from "../src/lib/RowPointer/IRowPointer.ts";
 
 const FILENAME = "./tmp/file4";
 const USE_STATIC_FILE_CONSTRUCTOR = true;

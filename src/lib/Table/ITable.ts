@@ -1,7 +1,4 @@
-export interface IRowPointer {
-  pageNumber: number;
-  recordNumber: number;
-}
+import { IRowPointer } from "../RowPointer/IRowPointer.ts";
 
 export interface ITable<RowType> {
   readAllRows(

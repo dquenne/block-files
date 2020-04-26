@@ -1,10 +1,12 @@
-import { ITable, IRowPointer } from "./ITable.ts";
+import { ITable } from "./ITable.ts";
+import { IRowPointer } from "../RowPointer/IRowPointer.ts";
 import { IBufferHandler } from "../BufferHandler/IBufferHandler.ts";
 import { PageManager } from "../PageManager.ts";
 import { FileBufferHandler } from "../BufferHandler/FileBufferHandler.ts";
+import { RowPointer } from "../RowPointer/RowPointer.ts";
 
-type Serializer<T> = (row: T) => Uint8Array;
-type Deserializer<T> = (buf: Uint8Array) => T;
+export type Serializer<T> = (row: T) => Uint8Array;
+export type Deserializer<T> = (buf: Uint8Array) => T;
 
 export class FileTable<T> implements ITable<T> {
   readonly pageManager: PageManager;
@@ -53,7 +55,7 @@ export class FileTable<T> implements ITable<T> {
     if (finalPage && finalPage.recordFits(buf.byteLength)) {
       const recordNumber = finalPage.addRecord(buf.buffer);
       await this.pageManager.writePage(finalPageIndex, finalPage);
-      return { pageNumber: finalPageIndex, recordNumber };
+      return new RowPointer(finalPageIndex, recordNumber);
     } else {
       console.log(
         `page ${finalPageIndex} is full, ${finalPage?.numRecords} stored`
@@ -62,7 +64,7 @@ export class FileTable<T> implements ITable<T> {
       const newPage = (await this.pageManager.getPage(newPageIndex))!;
       const recordNumber = newPage.addRecord(buf.buffer);
       await this.pageManager.writePage(newPageIndex, newPage);
-      return { pageNumber: newPageIndex, recordNumber };
+      return new RowPointer(newPageIndex, recordNumber);
     }
   }
 
