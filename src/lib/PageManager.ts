@@ -2,6 +2,9 @@ import { Page } from "./Page/index.ts";
 import { IBufferHandler } from "./BufferHandler/IBufferHandler.ts";
 import { FileBufferHandler } from "./BufferHandler/FileBufferHandler.ts";
 
+/* TO DO: consider making PageManager stateful and having it keep track of a
+  "current open page" and read/write to files only when opening & closing
+  pages */
 export class PageManager {
   constructor(readonly bufferHandler: IBufferHandler) {}
 
@@ -23,6 +26,9 @@ export class PageManager {
   }
 
   async getPage(pageNumber: number) {
+    if (pageNumber < 0) {
+      return undefined;
+    }
     const buffer = await this.bufferHandler.getPage(pageNumber);
     return buffer && Page.fromBuffer(buffer);
   }

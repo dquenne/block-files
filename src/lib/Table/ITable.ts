@@ -8,4 +8,5 @@ export interface ITable<RowType> {
   readPage(pageNumber: number): AsyncIterator<RowType, void>;
   getRow(rowPointer: IRowPointer): Promise<RowType | undefined>;
   addRow(row: RowType): Promise<IRowPointer>;
+  addRows(row: Iterable<RowType>): Promise<IRowPointer[]>;
 }

@@ -43,26 +43,37 @@ export class FileTable<T> implements ITable<T> {
     return buf && this.rowDeserializer(buf);
   }
 
-  async addRow(row: T): Promise<IRowPointer> {
-    const buf = this.rowSerializer(row);
+  async addRow(row: T) {
+    const [pointer] = await this.addRows([row]);
+    return pointer;
+  }
 
-    const finalPageIndex = (await this.pageManager.getLength()) - 1;
-    const finalPage =
-      finalPageIndex >= 0
-        ? await this.pageManager.getPage(finalPageIndex)
-        : undefined;
+  async addRows(rows: Iterable<T>): Promise<IRowPointer[]> {
+    const pointers: IRowPointer[] = [];
 
-    if (finalPage && finalPage.recordFits(buf.byteLength)) {
-      const recordNumber = finalPage.addRecord(buf.buffer);
-      await this.pageManager.writePage(finalPageIndex, finalPage);
-      return new RowPointer(finalPageIndex, recordNumber);
-    } else {
-      const newPageIndex = await this.pageManager.newPage();
-      const newPage = (await this.pageManager.getPage(newPageIndex))!;
-      const recordNumber = newPage.addRecord(buf.buffer);
-      await this.pageManager.writePage(newPageIndex, newPage);
-      return new RowPointer(newPageIndex, recordNumber);
+    let currentPageNumber = (await this.pageManager.getLength()) - 1;
+    let currentPage = await this.pageManager.getPage(currentPageNumber);
+
+    for (const row of rows) {
+      const buf = this.rowSerializer(row);
+
+      if (!currentPage?.recordFits(buf.byteLength)) {
+        if (currentPage) {
+          await this.pageManager.writePage(currentPageNumber, currentPage);
+        }
+        currentPageNumber = await this.pageManager.newPage();
+        currentPage = (await this.pageManager.getPage(currentPageNumber))!;
+      }
+
+      const recordNumber = currentPage.addRecord(buf);
+      pointers.push(new RowPointer(currentPageNumber, recordNumber));
     }
+
+    if (currentPage) {
+      await this.pageManager.writePage(currentPageNumber, currentPage);
+    }
+
+    return pointers;
   }
 
   static fromFile<T>(
