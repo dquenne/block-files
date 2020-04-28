@@ -23,6 +23,10 @@ export class RecordPointerCollection implements IRecordPointerCollection {
 
   add(pointer: IRecordPointer) {
     const newLength = this.pointers.push(pointer);
+    this.freeSpaceBeginPointer = Math.min(
+      pointer.offset,
+      this.freeSpaceBeginPointer
+    );
     return newLength - 1;
   }
 
