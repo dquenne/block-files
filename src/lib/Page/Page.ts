@@ -6,7 +6,6 @@ import {
 } from "../RecordPointerCollection/index.ts";
 
 export class Page implements IPage {
-  private cachedPointerCollection?: IRecordPointerCollection;
   constructor(readonly buffer: Uint8Array) {}
 
   get numRecords() {
@@ -28,7 +27,7 @@ export class Page implements IPage {
   }
 
   recordFits(recordLength: number): boolean {
-    const newRecordPointerCollection = this.readRecordPointerCollectionFromBuffer();
+    const newRecordPointerCollection = this.readRecordPointerCollection();
     const newPointer = this.readRecordPointerCollection().getNextPointer(
       recordLength,
       newRecordPointerCollection.freeSpaceBeginPointer
@@ -86,13 +85,6 @@ export class Page implements IPage {
   }
 
   readRecordPointerCollection() {
-    if (!this.cachedPointerCollection) {
-      this.cachedPointerCollection = this.readRecordPointerCollectionFromBuffer();
-    }
-    return this.cachedPointerCollection;
-  }
-
-  readRecordPointerCollectionFromBuffer() {
     return SimplePointerCollection.deserialize(
       this.buffer.slice(...this.recordPointersSpan).buffer
     );
@@ -103,7 +95,6 @@ export class Page implements IPage {
    * collection
    */
   writeRecordPointerCollection(collection: IRecordPointerCollection) {
-    this.cachedPointerCollection = collection;
     const buffer = collection.serialize();
     const newHeader = this.readHeader();
     newHeader.recordPointersByteLength = buffer.byteLength;
