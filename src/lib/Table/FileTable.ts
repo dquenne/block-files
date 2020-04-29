@@ -89,6 +89,8 @@ export class FileTable<T> implements ITable<T> {
     );
   }
 
+  // to do: should expose some means of closing the file, maybe have this
+  // return an object { table, file }
   static async fromPath<T>(
     path: string,
     pageBytes: number,
