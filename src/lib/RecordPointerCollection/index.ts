@@ -3,6 +3,12 @@ import {
   IRecordPointer,
   IRecordPointerCollection,
 } from "./IRecordPointerCollection.ts";
-import { RecordPointerCollection } from "./RecordPointerCollection.ts";
+import { ProtoBufPointerCollection } from "./ProtoBufPointerCollection.ts";
+import { SimplePointerCollection } from "./SimplePointerCollection.ts";
 
-export { IRecordPointer, IRecordPointerCollection, RecordPointerCollection };
+export {
+  IRecordPointer,
+  IRecordPointerCollection,
+  ProtoBufPointerCollection,
+  SimplePointerCollection,
+};

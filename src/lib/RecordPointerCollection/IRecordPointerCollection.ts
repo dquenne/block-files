@@ -1,7 +1,6 @@
 export interface IRecordPointer {
   offset: number;
   byteLength: number;
-  serialize(): ArrayBuffer;
 }
 
 export interface IRecordPointerCollection {

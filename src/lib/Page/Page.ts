@@ -1,7 +1,7 @@
 import { PageHeader } from "../PageHeader/index.ts";
 import { IPage } from "./IPage.ts";
 import {
-  RecordPointerCollection,
+  SimplePointerCollection,
   IRecordPointerCollection,
 } from "../RecordPointerCollection/index.ts";
 
@@ -93,7 +93,7 @@ export class Page implements IPage {
   }
 
   readRecordPointerCollectionFromBuffer() {
-    return RecordPointerCollection.deserialize(
+    return SimplePointerCollection.deserialize(
       this.buffer.slice(...this.recordPointersSpan).buffer
     );
   }
@@ -134,8 +134,7 @@ export class Page implements IPage {
   static create(pageBytes: number) {
     const page = new Page(new Uint8Array(pageBytes));
     const header = new PageHeader(pageBytes, 0);
-    const pointerCollection = new RecordPointerCollection(
-      [],
+    const pointerCollection = SimplePointerCollection.create(
       pageBytes,
       pageBytes
     );

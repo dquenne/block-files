@@ -10,7 +10,7 @@ import { RecordPointer } from "./RecordPointer.ts";
 // to keep records chunk aligned for caching
 const CHUNK_ALIGN_BYTES = 8;
 
-export class RecordPointerCollection implements IRecordPointerCollection {
+export class ProtoBufPointerCollection implements IRecordPointerCollection {
   constructor(
     public pointers: IRecordPointer[],
     public freeSpaceBeginPointer: number,
@@ -63,9 +63,12 @@ export class RecordPointerCollection implements IRecordPointerCollection {
     return fromObject(ProtoBufGenerated.RecordPointers, {
       freeSpaceBeginPointer: this.freeSpaceBeginPointer,
       freeSpaceEndPointer: this.freeSpaceEndPointer,
-      rowByteOffsets: this.pointers.map((p) =>
-        ProtoBufGenerated.RecordPointer.deserialize(p.serialize())
-      ),
+      rowByteOffsets: this.pointers.map((p) => {
+        const pb = ProtoBufGenerated.RecordPointer.createEmpty();
+        pb.byteLength = p.byteLength;
+        pb.offset = p.offset;
+        return pb;
+      }),
     });
   }
 
@@ -82,4 +85,4 @@ export class RecordPointerCollection implements IRecordPointerCollection {
 }
 
 // assert class matches static constructor interface
-const exportedClass: IRecordPointerCollectionConstructor = RecordPointerCollection;
+const exportedClass: IRecordPointerCollectionConstructor = ProtoBufPointerCollection;
