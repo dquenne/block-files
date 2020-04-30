@@ -48,13 +48,13 @@ export class FileTable<T> implements ITable<T> {
     return pointer;
   }
 
-  async addRows(rows: Iterable<T>): Promise<IRowPointer[]> {
+  async addRows(rows: Iterable<T> | AsyncIterable<T>): Promise<IRowPointer[]> {
     const pointers: IRowPointer[] = [];
 
     let currentPageNumber = (await this.pageManager.getLength()) - 1;
     let currentPage = await this.pageManager.getPage(currentPageNumber);
 
-    for (const row of rows) {
+    for await (const row of rows) {
       const buf = this.rowSerializer(row);
 
       if (!currentPage?.recordFits(buf.byteLength)) {
