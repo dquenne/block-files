@@ -1,5 +1,5 @@
 import { IBufferHandler } from "./IBufferHandler.ts";
-import { chunkedRead, isEOF } from "../util/file.ts";
+import { chunkedRead, isEOF, chunkedWrite } from "../util/file.ts";
 
 /**
  * Simple file-based buffer handler. Read/write operations actually read from
@@ -48,7 +48,7 @@ export class ChunkedFileBufferHandler implements IBufferHandler {
 
   async writePage(pageNumber: number, buffer: Uint8Array) {
     await this.seekToPage(pageNumber);
-    return await this.file.write(buffer);
+    return await chunkedWrite(this.file, buffer);
   }
 
   private async seekToPage(pageNumber: number) {

@@ -1,4 +1,5 @@
 import { IBufferHandler } from "./IBufferHandler.ts";
+import { chunkedRead, chunkedWrite } from "../util/file.ts";
 
 /**
  * Simple file-based buffer handler. Read/write operations actually read from
@@ -24,7 +25,7 @@ export class FileBufferHandler implements IBufferHandler {
   async getPage(pageNumber: number) {
     const outBuffer = new Uint8Array(this.pageBytes);
     await this.seekToPage(pageNumber);
-    const numRead = await this.file.read(outBuffer);
+    const numRead = await chunkedRead(this.file, outBuffer);
     if (numRead === Deno.EOF) {
       return undefined;
     }
@@ -33,7 +34,7 @@ export class FileBufferHandler implements IBufferHandler {
 
   async writePage(pageNumber: number, buffer: Uint8Array) {
     await this.seekToPage(pageNumber);
-    return await this.file.write(buffer);
+    return await chunkedWrite(this.file, buffer);
   }
 
   private async seekToPage(pageNumber: number) {
